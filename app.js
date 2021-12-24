@@ -11,11 +11,17 @@ require('dotenv').config({ path: 'enviroments.env' });
 
 const { ConnectionService } = require('./services/connection-service');
 
+//puerto donde va a correr mi backEnd
+const PORT = process.env.PORT;
+
 //crear el servidor de express
 const app = express();
 
 //configuro cors
 app.use(cors());
+
+//lectura y parseo del body
+app.use(express.json());
 
 //connection
 ConnectionService();
@@ -33,11 +39,7 @@ app.use('/api/login', authRoute);
 app.use('/api/search', searcherRoute);
 app.use('/api/uploadfile', uploadfilesRoute);
 
-//lectura y parseo del body
-app.use(express.json());
 
-//puerto donde va a correr mi backEnd
-const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} `);
