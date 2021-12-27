@@ -1,13 +1,11 @@
 const jwt = require('jsonwebtoken');
 
 
-const generateJWT = (uid, name, role) => {
+const generateJWT = (uid) => {
 
     return new Promise((resolve, reject) => {
         const payload = {
-            uid,
-            Name: name,
-            Role: role
+            uid
         };
         const privateKey = process.env.SECRET_KEY_JWT;
 

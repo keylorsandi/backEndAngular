@@ -2,6 +2,7 @@ const { response } = require("express");
 const User = require("../models/userModel");
 const bcrypt = require('bcryptjs');
 const { generateJWT } = require("../helpers/jwt");
+const { googleVerify } = require("../helpers/google-verify");
 
 const authLogin = async(req, res = response) => {
     try {
@@ -26,9 +27,9 @@ const authLogin = async(req, res = response) => {
                 msg: "Email or password are incorrect"
             });
         };
+        //create JWT
+        const token = await generateJWT(userDb._id);
 
-        const { _id, name, role } = userDb
-        const token = await generateJWT(_id, name, role);
         return res.status('200').json({
             ok: true,
             msg: "You login successfully",
@@ -43,4 +44,46 @@ const authLogin = async(req, res = response) => {
     }
 }
 
-module.exports = { authLogin }
+const googleSignin = async(req, res = response) => {
+
+    const googleToken = req.body.token;
+
+    try {
+
+        const { given_name, family_name, email, picture } = await googleVerify(googleToken);
+
+        const userDb = await User.findOne({ email });
+        let user;
+        if (!userDb) {
+            user = new User({
+                name: given_name,
+                lastName: family_name,
+                email,
+                password: '123',
+                role: "admin",
+                google: true,
+                state: true,
+                img: picture
+            });
+        } else {
+            user = userDb;
+            user.google = true;
+        }
+        await user.save();
+
+        const token = await generateJWT(user._id);
+
+        res.json({
+            msg: "Login succes",
+            token
+        });
+    } catch (error) {
+        res.status('401').json({
+            msg: "The token is not valid"
+        });
+    }
+
+
+}
+
+module.exports = { authLogin, googleSignin }
