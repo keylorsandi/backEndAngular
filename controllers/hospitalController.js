@@ -1,4 +1,5 @@
 const { response } = require("express");
+const { findOne } = require("../models/hospitalModel");
 const Hospital = require('../models/hospitalModel')
 
 
@@ -6,6 +7,12 @@ const getHospitals = async(req, res = response) => {
 
     try {
         const hospitals = await Hospital.find().populate('userID', 'name lastName');
+
+        if (hospitals.length == 0) {
+            res.status('404').json({
+                msg: "Hospitals not Found"
+            })
+        }
         res.status('200').json({
             Hospitals: hospitals
         });
@@ -48,15 +55,77 @@ const postHospitals = async(req, res = response) => {
 };
 
 const updateHospitals = async(req, res = response) => {
-    res.status('200').json({
-        Hospitals: 'hospitals'
-    });
+
+    const { name } = req.body;
+    const hId = req.params.id;
+    const uId = req.uId;
+    try {
+        const hospital = await Hospital.findById(hId)
+        if (!hospital) {
+            res.status('404').json({
+                msg: "This Hospital doesn't exist."
+            });
+        };
+
+        const nameExist = await Hospital.findOne({ name });
+        console.log(name)
+        if (nameExist) {
+            return res.status('400').json({
+                msg: "This name already exist"
+            });
+        };
+
+        const hospitalChanges = {
+            name,
+            userID: uId
+        };
+
+        const hospitalUpdated = await Hospital.findByIdAndUpdate(hId, hospitalChanges, { new: true });
+
+        res.status('200').json({
+            Hospital: hospitalUpdated
+        });
+    } catch (error) {
+        return res.status('500').json({
+            ok: false,
+            msg: 'Contact whit support.'
+        });
+    };
+
 };
 
 const deleteHospitals = async(req, res = response) => {
-    res.status('200').json({
-        Hospitals: 'hospitals'
-    });
+
+    const hId = req.params.id;
+
+    try {
+
+        const hospital = await Hospital.findById(hId)
+        if (!hospital) {
+            res.status('404').json({
+                msg: "This Hospital doesn't exist."
+            });
+        };
+
+        const hospitalChanges = {
+            state: false
+        };
+
+        const hospitalDeleted = await Hospital.findByIdAndUpdate(hId, hospitalChanges, { new: true });
+
+        const { id, name } = hospitalDeleted
+        return res.status('200').json({
+            msg: "Hospital was eliminated",
+            Hospital: name,
+            HospitalID: id
+        });
+
+    } catch (error) {
+        return res.status('500').json({
+            ok: false,
+            msg: 'Contact whit support.'
+        });
+    };
 }
 
 module.exports = { getHospitals, postHospitals, updateHospitals, deleteHospitals };

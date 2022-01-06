@@ -71,7 +71,7 @@ const putUsers = async(req, res = response) => {
     const uId = req.params.id;
     try {
         const userDB = await User.findById(uId);
-
+        console.log(userDB)
         if (!userDB) {
             return res.status('404').json({
                 ok: false,
@@ -109,7 +109,7 @@ const putUsers = async(req, res = response) => {
 const deleteUsers = async(req, res = response) => {
     const uId = req.params.id
     try {
-        const userDB = await User.findById(uId);
+        const userDB = await User.findOne({ uId });
 
         if (!userDB) {
             return res.status('404').json({

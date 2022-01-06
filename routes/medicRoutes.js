@@ -11,10 +11,16 @@ router.post('/', [
     validateJWT,
     body('name', 'The name is required').notEmpty(),
     body('lastName', 'The last name is required').notEmpty(),
-    body('hospitalID', 'The hospital´s id isn`t valid').isMongoId(),
+    body('hospitalID', 'The hospital`s id isn`t valid').isMongoId(),
     validatorFields
 ], postMedics);
-router.put('/:id', validatorFields, updateMedics);
+router.put('/:id', [
+    validateJWT,
+    body('name', 'The name is required').notEmpty(),
+    body('lastName', 'The last name is required').notEmpty(),
+    body('hospitalID', 'The hospital`s id isn`t valid').isMongoId(),
+    validatorFields
+], updateMedics);
 router.delete('/:id', validateJWT, deleteMedics);
 
 module.exports = router;

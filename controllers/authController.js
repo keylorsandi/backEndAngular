@@ -40,8 +40,8 @@ const authLogin = async(req, res = response) => {
         return res.status('500').json({
             ok: false,
             msg: 'Contact whit support.'
-        })
-    }
+        });
+    };
 }
 
 const googleSignin = async(req, res = response) => {
@@ -81,9 +81,20 @@ const googleSignin = async(req, res = response) => {
         res.status('401').json({
             msg: "The token is not valid"
         });
-    }
+    };
 
+};
 
+const renewToken = async(req, res) => {
+
+    const uid = req.uid
+
+    const token = await generateJWT(uid);
+
+    res.json({
+        msg: "tas chido",
+        uid
+    });
 }
 
-module.exports = { authLogin, googleSignin }
+module.exports = { authLogin, googleSignin, renewToken }

@@ -17,10 +17,10 @@ router.post('/', [
     validatorFields
 ], postHospitals);
 router.put('/:id', [
-    validateJWT
+    validateJWT,
+    body('name', 'Name is required').notEmpty()
 ], updateHospitals);
-router.delete('/:id', [
-    validateJWT
-], deleteHospitals);
+router.delete('/:id',
+    validateJWT, deleteHospitals);
 
 module.exports = router;
