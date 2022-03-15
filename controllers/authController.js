@@ -92,8 +92,8 @@ const renewToken = async(req, res) => {
     const token = await generateJWT(uid);
 
     res.json({
-        msg: "tas chido",
-        uid
+        uid,
+        token
     });
 }
 

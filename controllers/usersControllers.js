@@ -29,16 +29,13 @@ const postUsers = async(req, res = response) => {
     const { email, password } = req.body;
 
     try {
-
         const emailExist = await User.findOne({ email });
-
         if (emailExist) {
             return res.status('400').json({
                 ok: false,
                 msg: 'The email already exist.'
             });
         }
-
         const user = new User(req.body);
 
         //encrypt password
